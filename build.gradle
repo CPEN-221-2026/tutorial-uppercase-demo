@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'cpen221.tutorials'
+version = '1.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+application {
+    mainClass = 'uppercase.server.UppercaseServer'
+}
+
+// Run every JavaExec task (including `run`) on the toolchain JDK, not the JVM running Gradle.
+tasks.withType(JavaExec).configureEach {
+    javaLauncher = javaToolchains.launcherFor(java.toolchain)
+}
+
+tasks.register('runServer', JavaExec) {
+    mainClass = 'uppercase.server.UppercaseServer'
+    classpath = sourceSets.main.runtimeClasspath
+    args = ['8084']
+}
+
+tasks.register('runClient', JavaExec) {
+    mainClass = 'uppercase.client.UppercaseClient'
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in   // lets you type into the client from the terminal
+    args = ['localhost', '8084']
+}
